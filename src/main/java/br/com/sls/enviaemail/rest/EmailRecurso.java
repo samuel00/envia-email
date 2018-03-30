@@ -37,7 +37,11 @@ public class EmailRecurso {
 	private HTTPResponse httpResponse;
 
 	@RequestMapping(method = RequestMethod.POST, value = "/simples", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> enviaEmailSimples(@RequestBody EmailDTO emailDTO, HttpServletRequest request) {
+	public ResponseEntity<?> enviaEmailSimples(@Valid @RequestBody EmailDTO emailDTO, BindingResult bindingResult, HttpServletRequest request) {
+		if (bindingResult.hasErrors()) {
+			return new ResponseEntity<HTTPResponse>(new HTTPResponse(bindingResult.getFieldError().getDefaultMessage(),
+					HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+		}
 		httpResponse = emailServico.enviaSemail(emailDTO);
 		return new ResponseEntity<HTTPResponse>(httpResponse, httpResponse.getStatus());
 
